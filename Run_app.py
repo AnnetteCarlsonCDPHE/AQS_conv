@@ -11,7 +11,7 @@ SITE_LOOKUP = {
     15: 'LSCO',
     2: 'DECO',
     4: 'CHCO',
-    1: 'BFCO',
+    9: 'BFCO',
     14:'MPCO',
     8:'PVCO'
 }
