@@ -28,6 +28,7 @@ PROGRAM_LOOKUP = {
 }
 
 PARAMETER_LOOKUP = {
+    43201:'Methane',
     17141:'Naphthalene',
     17147:'Acenaphthene',
     17148:'Acenaphthylene',
@@ -197,6 +198,7 @@ PARAMETER_LOOKUP = {
 }
 
 TestType_LOOKUP = {
+    43201:'VOC',
     17141:'PAH',
     17147:'PAH',
     17148:'PAH',
