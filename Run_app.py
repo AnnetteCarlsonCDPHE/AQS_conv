@@ -11,7 +11,7 @@ SITE_LOOKUP = {
     15: 'LSCO',
     2: 'DECO',
     4: 'CHCO',
-    9: 'BFCO',
+    1: 'BFCO',
     14:'MPCO',
     8:'PVCO'
 }
@@ -28,7 +28,6 @@ PROGRAM_LOOKUP = {
 }
 
 PARAMETER_LOOKUP = {
-    43201:'Methane',
     17141:'Naphthalene',
     17147:'Acenaphthene',
     17148:'Acenaphthylene',
@@ -198,7 +197,6 @@ PARAMETER_LOOKUP = {
 }
 
 TestType_LOOKUP = {
-    43201:'VOC',
     17141:'PAH',
     17147:'PAH',
     17148:'PAH',
@@ -377,10 +375,15 @@ with st.expander("View Lookup Tables"):
     st.dataframe(pd.DataFrame(list(PARAMETER_LOOKUP.items()), columns=["Parameter Code", "Analyte"]))
     st.dataframe(pd.DataFrame(list(TestType_LOOKUP.items()), columns=["Parameter Code", "Test Type"]))
 
+#try to improve processing by using cacheing: 
+@st.cache_data
+def load_file_content(uploaded_file):
+    """Load and decode file contents with caching"""
+    return uploaded_file.getvalue().decode("utf-8")
 
-uploaded_file = st.file_uploader("Choose a text file", type="txt")
-
-if uploaded_file is not None:
+@st.cache_data
+def process_content(content):
+    """Process the file content with caching"""
     # Read and display original content
     content = uploaded_file.getvalue().decode("utf-8")
     st.subheader("Original File Content")
@@ -454,3 +457,35 @@ if uploaded_file is not None:
             st.warning("The column 'Site ID' was not found in your file. Please verify your file format.")
         if "Parameter" in str(e):
             st.warning("The column 'Parameter' was not found in your file. Please verify your file format.")
+            
+    return df
+
+
+uploaded_file = st.file_uploader("Choose a text file", type="txt")
+
+
+if uploaded_file is not None:
+    # Use the cached function to load content
+    content = load_file_content(uploaded_file)
+    
+    # Display original content
+    st.subheader("Original File Content")
+    st.text_area("Original text", content, height=200)
+    
+    try:
+        # Use the cached function for processing
+        processed_result = process_content(content)
+        
+        # Display or export your processed result
+        st.subheader("Processed Result")
+        st.text_area("Processed text", processed_result, height=200)
+        
+        # Add download button for the processed result
+        st.download_button(
+            label="Download processed file",
+            data=processed_result,
+            file_name="processed_file.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+    except Exception as e:
+        st.error(f"An error occurred during processing: {e}")
