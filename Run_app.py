@@ -378,7 +378,13 @@ st.write("Upload a pipe-delimited text file to process and download the modified
 
 # Show lookup table
 with st.expander("View Lookup Tables"):
-    st.dataframe(pd.DataFrame(list(SITE_LOOKUP.items()), columns=["County Code", "Site ID", "Site"]))
+    #st.dataframe(pd.DataFrame(list(SITE_LOOKUP.items()), columns=["County Code", "Site ID", "Site"]))
+    lookup_data = []
+    for (site_id, county_code), site_name in SITE_LOOKUP.items():
+        lookup_data.append([site_id, county_code, site_name])
+    
+    st.dataframe(pd.DataFrame(lookup_data, columns=["County Code", "Site ID", "Site"]))
+    
     st.dataframe(pd.DataFrame(list(PROGRAM_LOOKUP.items()), columns=["Site", "Program"]))
     st.dataframe(pd.DataFrame(list(PARAMETER_LOOKUP.items()), columns=["Parameter Code", "Analyte"]))
     st.dataframe(pd.DataFrame(list(TestType_LOOKUP.items()), columns=["Parameter Code", "Test Type"]))
