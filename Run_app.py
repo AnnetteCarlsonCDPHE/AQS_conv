@@ -3,17 +3,25 @@ import pandas as pd
 import io
 from io import BytesIO
 
-# Define lookup tables 
-SITE_LOOKUP = {
-    10: 'ADCO',
-    17: 'GPCO',
-    18: 'GPCO',
-    15: 'LSCO',
-    2: 'DECO',
-    4: 'CHCO',
-    1: 'BFCO',
-    14:'MPCO',
-    8:'PVCO'
+# Define lookup tables
+# changing this to a composite key dictionary to handle county and site codes together since we have duplicate site IDs now. 
+SITE_LOOKUP = {#County Code , Site ID 
+    #COATTS/NATTS           
+    (1, 10): 'ADCO', 
+    (77, 17): 'GPCO',
+    (77, 18): 'GPCO',
+    (123, 15): 'LSCO',
+    #new COATTS sites
+    (101, 17) : 'POCO',
+    (41, 17) : 'COCO',
+    (43, 4) : 'CNCO',
+    (59, 15) : 'JFCO',
+    #COOPS
+    (1, 2): 'DECO', #not sure which site this is anymore .. added place holder, ask Rob
+    (35, 4): 'CHCO',
+    (1, 9): 'BFCO', #this was the problem child bc I typed the wrong number lol 
+    (123, 14):'MPCO',
+    (123, 8):'PVCO'
 }
 
 PROGRAM_LOOKUP = {
@@ -370,7 +378,7 @@ st.write("Upload a pipe-delimited text file to process and download the modified
 
 # Show lookup table
 with st.expander("View Lookup Tables"):
-    st.dataframe(pd.DataFrame(list(SITE_LOOKUP.items()), columns=["Code", "Site"]))
+    st.dataframe(pd.DataFrame(list(SITE_LOOKUP.items()), columns=["Co Code", "Site ID", "Site"]))
     st.dataframe(pd.DataFrame(list(PROGRAM_LOOKUP.items()), columns=["Site", "Program"]))
     st.dataframe(pd.DataFrame(list(PARAMETER_LOOKUP.items()), columns=["Parameter Code", "Analyte"]))
     st.dataframe(pd.DataFrame(list(TestType_LOOKUP.items()), columns=["Parameter Code", "Test Type"]))
@@ -407,7 +415,9 @@ def process_content(content):
             
             # Add the new columns
             #convert the site codes to our acronyms: 
-            df['Site'] = df['Site ID'].map(SITE_LOOKUP)
+            #df['Site'] = df['Site ID'].map(SITE_LOOKUP)
+            #new try
+            df['Site'] = df.apply(lambda row: SITE_LOOKUP.get((row['Site ID'], row['County Code']), 'No Match'), axis=1)
             df['Analyte'] = df['Parameter'].map(PARAMETER_LOOKUP)  
             df['Test_Type'] = df['Parameter'].map(TestType_LOOKUP)
             df['Program'] = df['Site'].map(PROGRAM_LOOKUP)  
