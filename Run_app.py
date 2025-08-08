@@ -378,7 +378,7 @@ st.write("Upload a pipe-delimited text file to process and download the modified
 
 # Show lookup table
 with st.expander("View Lookup Tables"):
-    st.dataframe(pd.DataFrame(list(SITE_LOOKUP.items()), columns=["Co Code", "Site ID", "Site"]))
+    st.dataframe(pd.DataFrame(list(SITE_LOOKUP.items()), columns=["County Code", "Site ID", "Site"]))
     st.dataframe(pd.DataFrame(list(PROGRAM_LOOKUP.items()), columns=["Site", "Program"]))
     st.dataframe(pd.DataFrame(list(PARAMETER_LOOKUP.items()), columns=["Parameter Code", "Analyte"]))
     st.dataframe(pd.DataFrame(list(TestType_LOOKUP.items()), columns=["Parameter Code", "Test Type"]))
@@ -417,7 +417,7 @@ def process_content(content):
             #convert the site codes to our acronyms: 
             #df['Site'] = df['Site ID'].map(SITE_LOOKUP)
             #new try
-            df['Site'] = df.apply(lambda row: SITE_LOOKUP.get((row['Site ID'], row['County Code']), 'No Match'), axis=1)
+            df['Site'] = df.apply(lambda row: SITE_LOOKUP.get((row['County Code'],row['Site ID']), 'No Match'), axis=1)
             df['Analyte'] = df['Parameter'].map(PARAMETER_LOOKUP)  
             df['Test_Type'] = df['Parameter'].map(TestType_LOOKUP)
             df['Program'] = df['Site'].map(PROGRAM_LOOKUP)  
